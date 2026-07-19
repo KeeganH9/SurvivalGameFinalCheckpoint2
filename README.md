@@ -45,7 +45,7 @@ CONTROLS:
 -C to enter crafting interface
 -I to enter invenotry
 -Left Click to swing and attack, while in inventory to equip items, and to select recipes and craft intems in crafting ui
--F is to consume
+-F is to consume(Only consumable is the health potion right now)
 -NOT ADDED: right click to block if sheild is in right hand
 
 ---
