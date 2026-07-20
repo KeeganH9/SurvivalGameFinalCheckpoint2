@@ -207,6 +207,8 @@ MonoBehaviour:
   item: {fileID: 11400000, guid: 38b60c48643c4ec4e85baa9eaa9057ac, type: 2}
   amountPerCollect: 1
   usesRemaining: 5
-  promptText: Press E to collect
-  animationTrigger: Chop
   destroyWhenEmpty: 1
+  promptText: E to chop
+  animationTrigger: Chop
+  requiresTool: 1
+  requiredTool: 1

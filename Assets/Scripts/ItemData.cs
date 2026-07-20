@@ -9,6 +9,13 @@ public enum ItemType
     Consumable
 }
 
+public enum ToolType
+{
+    None,
+    Axe,
+    Pickaxe
+}
+
 [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
 public class ItemData : ScriptableObject
 {
@@ -21,6 +28,9 @@ public class ItemData : ScriptableObject
     [Header("Equipping")]
     public bool canEquip;
     public GameObject equippedPrefab;
+
+    [Header("Tool Settings")]
+    public ToolType toolType = ToolType.None;
 
     [Header("Combat Stats")]
     public int damage = 10;

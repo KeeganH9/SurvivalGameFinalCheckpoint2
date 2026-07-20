@@ -16,7 +16,7 @@ MonoBehaviour:
   description: 
   recipeIcon: {fileID: 0}
   ingredients:
-  - item: {fileID: 11400000, guid: 38b60c48643c4ec4e85baa9eaa9057ac, type: 2}
+  - item: {fileID: 11400000, guid: a2d4ad7d0f8a47348b55ffa7b4334311, type: 2}
     amount: 5
   - item: {fileID: 11400000, guid: ed0c7802c59328f46b00837a9dfc2542, type: 2}
     amount: 3

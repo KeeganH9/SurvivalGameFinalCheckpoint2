@@ -284,9 +284,11 @@ MonoBehaviour:
   item: {fileID: 11400000, guid: 8a4919c9722bb984487a57520775755f, type: 2}
   amountPerCollect: 1
   usesRemaining: 3
-  promptText: Press E to collect
-  animationTrigger: PickFruit
   destroyWhenEmpty: 1
+  promptText: E to collect
+  animationTrigger: PickFruit
+  requiresTool: 0
+  requiredTool: 0
 --- !u!1 &7513603357302551873
 GameObject:
   m_ObjectHideFlags: 0

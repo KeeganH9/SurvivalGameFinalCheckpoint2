@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12e88959147b4214e9827e9e3a05fa92, type: 3}
+  m_Name: PickAxeRecipe
+  m_EditorClassIdentifier: Assembly-CSharp::CraftingRecipe
+  recipeName: Pickaxe
+  description: 
+  recipeIcon: {fileID: 0}
+  ingredients:
+  - item: {fileID: 11400000, guid: 38b60c48643c4ec4e85baa9eaa9057ac, type: 2}
+    amount: 10
+  - item: {fileID: 11400000, guid: ed0c7802c59328f46b00837a9dfc2542, type: 2}
+    amount: 5
+  result: {fileID: 11400000, guid: 6824d61fcc9fc55499bb72466fdb2570, type: 2}
+  resultAmount: 1

@@ -127,9 +127,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3988870668be3ed40aeedb712fb52105, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableResource
-  item: {fileID: 11400000, guid: 38b60c48643c4ec4e85baa9eaa9057ac, type: 2}
+  item: {fileID: 11400000, guid: a2d4ad7d0f8a47348b55ffa7b4334311, type: 2}
   amountPerCollect: 1
   usesRemaining: 1
-  promptText: Press E to collect
-  animationTrigger: GatherOre
   destroyWhenEmpty: 1
+  promptText: E to collect
+  animationTrigger: GatherOre
+  requiresTool: 0
+  requiredTool: 0

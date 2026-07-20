@@ -100,9 +100,11 @@ MonoBehaviour:
   item: {fileID: 11400000, guid: ed0c7802c59328f46b00837a9dfc2542, type: 2}
   amountPerCollect: 1
   usesRemaining: 1
-  promptText: Press E to collect
-  animationTrigger: PickOre
   destroyWhenEmpty: 1
+  promptText: E to collect
+  animationTrigger: GatherOre
+  requiresTool: 0
+  requiredTool: 0
 --- !u!1 &5215970427928307999
 GameObject:
   m_ObjectHideFlags: 0

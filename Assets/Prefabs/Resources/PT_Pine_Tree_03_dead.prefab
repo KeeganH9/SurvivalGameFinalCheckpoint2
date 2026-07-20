@@ -102,9 +102,11 @@ MonoBehaviour:
   item: {fileID: 11400000, guid: 38b60c48643c4ec4e85baa9eaa9057ac, type: 2}
   amountPerCollect: 1
   usesRemaining: 5
-  promptText: 
-  animationTrigger: Attack
   destroyWhenEmpty: 1
+  promptText: E to chop
+  animationTrigger: Attack
+  requiresTool: 1
+  requiredTool: 1
 --- !u!1 &3362487869812425040
 GameObject:
   m_ObjectHideFlags: 0
