@@ -10,6 +10,7 @@ SCENES:
 -added a title scene
 -added the game scene
 -added death scene
+-added tutorial scene inbetween Title and Game scenes
 
 ---
 
@@ -55,7 +56,7 @@ UI:
 -Added a crafting system where player can select the recipe and then it shows the resources required and a craft button that takes the item to the inventory
 -Added the ability to click on equipable objects in inventory and now player can equip things with a click
 -These items are also highlighted in the invtory UI
--Added a health Bar that deplets as player takes damage and can be replenished when health potion is drank
+-Added a health Bar that deplets as player takes damage and can be replenished when health potion is drank, made it a fixed point so it doesnt move when resizing the screen
 -Added Compas(New UI will added to the compas soon)
 
 ---
@@ -63,6 +64,7 @@ UI:
 CRAFTING RECIPES:
 -Axes is craftable and equipable and it usable with animation
 -Sword is craftable and equipable and useable with attack animation
+-Pick Aex is craftable and equipable and when used on ore has its own animation
 -Health Potion Is craftable and equipable and now the drink animation is working correctly
 
 ---
@@ -81,9 +83,16 @@ RESOURCES/TERRAIN/TEXTURES:
 
 AUDIO:
 -Added new background music in game to fit the game idea better
+-Added walking sounds to play moveing
 -Added new main menu music
 -Added zombies sounds that correspond to it running, attacking, or dying
 
+---
+
+Animations:
+-Added Player animations for Picking fruit, attacking, picking up sticks and rocks, and mining the ore
+-Added wolf animations for attacking, running, sitting, idleing, and walking
+-Added zombie animations for attacking, running, and dying
 
 ---
 
