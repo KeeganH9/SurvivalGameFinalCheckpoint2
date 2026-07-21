@@ -24,6 +24,7 @@ STRUCTURES:
 
 COMBAT:
 -Player can equip weapons and press left click to attack with them
+-Player can equip shield in right hand if clicked along with with a weapon, player can not move while blocking(Shield object switches position depending on whether player is blocking at the current moment)
 -Each Weapon/Unarmed object will have its own stats in game
 -Player can take damage from zombies
 -Zombies Ai and attacks have been implemented they now do damage to the player and the health bar UI segments deplete as certain amounts of damage are done
@@ -47,7 +48,7 @@ CONTROLS:
 -I to enter invenotry
 -Left Click to swing and attack, while in inventory to equip items, and to select recipes and craft intems in crafting ui
 -F is to consume(Only consumable is the health potion right now)
--NOT ADDED: right click to block if sheild is in right hand
+-Right click to block if sheild is in right hand
 
 ---
 
@@ -78,6 +79,7 @@ RESOURCES/TERRAIN/TEXTURES:
 -Added new terrain texture
 -Added new grass detail textures
 -Added new character model to fit the games vibes better
+-Added Interactable Book at camp that acts as the players diary to give a little story to the game
 
 ---
 
@@ -90,7 +92,7 @@ AUDIO:
 ---
 
 Animations:
--Added Player animations for Picking fruit, attacking, picking up sticks and rocks, and mining the ore
+-Added Player animations for Picking fruit, attacking, picking up sticks and rocks, mining the ore, and blocking against enemies
 -Added wolf animations for attacking, running, sitting, idleing, and walking
 -Added zombie animations for attacking, running, and dying
 
@@ -98,7 +100,6 @@ Animations:
 
 GAMEPLAY LOOP:
 -Added a day night counter where more and more zombies will come to attack the player and it will increase the amount of zombies spawned everysingle night the goal is to survive as long as possible with more zombies chasing and attacking at once
--()
 
 ASSET LINKS:
 https://assetstore.unity.com/packages/3d/environments/low-poly-environment-nature-free-lowpoly-medieval-fantasy-series-187052Links to an external site.Links to an external site.
@@ -136,4 +137,4 @@ https://www.mixamo.com/#/?page=1&query=swing
 https://www.mixamo.com/#/?genres=&page=1&query=overhead
 https://api.unity.com/v1/oauth2/authorize?client_id=asset_store_v2&locale=en_US&redirect_uri=https%3A%2F%2Fassetstore.unity.com%2Fauth%2Fcallback%3Fredirect_to%3D%252Fpackages%252F3d%252Fprops%252Ftools%252Ffree-stylized-tools-248042&response_type=code&state=437e3219-d1d6-4cbe-9cfb-473e08d02535
 https://www.mixamo.com/#/?page=1&query=block
-
+https://assetstore.unity.com/packages/3d/props/interior/mobile-books-3356
