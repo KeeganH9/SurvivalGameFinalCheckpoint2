@@ -16,9 +16,11 @@ public class PlayerCombat : MonoBehaviour
     [Header("References")]
     public LayerMask zombieLayer;
     public Animator animator;
+    public PlayerEquipment playerEquipment;
 
     [Header("Animation")]
     public string attackTrigger = "Attack";
+    public string blockingParameter = "IsBlocking";
 
     private Transform currentAttackPoint;
     private int currentDamage;
@@ -27,6 +29,12 @@ public class PlayerCombat : MonoBehaviour
     private float defaultAttackCooldown;
     private float nextAttackTime;
     private bool attackInProgress;
+    private bool isBlocking;
+
+    public bool IsBlocking
+    {
+        get { return isBlocking; }
+    }
 
     private void Awake()
     {
@@ -35,20 +43,31 @@ public class PlayerCombat : MonoBehaviour
             animator = GetComponentInChildren<Animator>();
         }
 
-        defaultAttackCooldown = attackCooldown;
+        if (playerEquipment == null)
+        {
+            playerEquipment = GetComponent<PlayerEquipment>();
+        }
 
+        defaultAttackCooldown = attackCooldown;
         EquipUnarmed();
     }
 
     private void Update()
     {
-        // Prevent attacking while the inventory or another menu is open.
         if (InventoryUI.IsAnyMenuOpen)
         {
+            StopBlocking();
             return;
         }
 
         if (Mouse.current == null)
+        {
+            return;
+        }
+
+        HandleBlocking();
+
+        if (isBlocking)
         {
             return;
         }
@@ -66,12 +85,54 @@ public class PlayerCombat : MonoBehaviour
         StartCoroutine(AttackRoutine());
     }
 
+    private void HandleBlocking()
+    {
+        bool hasShield =
+            playerEquipment != null &&
+            playerEquipment.HasShieldEquipped();
+
+        bool wantsToBlock =
+            hasShield &&
+            Mouse.current.rightButton.isPressed &&
+            !attackInProgress;
+
+        if (wantsToBlock == isBlocking)
+        {
+            return;
+        }
+
+        isBlocking = wantsToBlock;
+
+        if (animator != null &&
+            !string.IsNullOrEmpty(blockingParameter))
+        {
+            animator.SetBool(blockingParameter, isBlocking);
+        }
+    }
+
+    private void StopBlocking()
+    {
+        if (!isBlocking)
+        {
+            return;
+        }
+
+        isBlocking = false;
+
+        if (animator != null &&
+            !string.IsNullOrEmpty(blockingParameter))
+        {
+            animator.SetBool(blockingParameter, false);
+        }
+    }
+
     private IEnumerator AttackRoutine()
     {
         attackInProgress = true;
         nextAttackTime = Time.time + attackCooldown;
 
-        if (animator != null && !string.IsNullOrEmpty(attackTrigger))
+        if (animator != null &&
+            !string.IsNullOrEmpty(attackTrigger))
         {
             animator.SetTrigger(attackTrigger);
         }
@@ -94,7 +155,9 @@ public class PlayerCombat : MonoBehaviour
     {
         if (currentAttackPoint == null)
         {
-            Debug.LogWarning("PlayerCombat has no current attack point.");
+            Debug.LogWarning(
+                "PlayerCombat has no current attack point."
+            );
             return;
         }
 
@@ -104,7 +167,9 @@ public class PlayerCombat : MonoBehaviour
             zombieLayer
         );
 
-        Debug.Log("Found " + hits.Length + " enemy colliders.");
+        Debug.Log(
+            "Found " + hits.Length + " enemy colliders."
+        );
 
         foreach (Collider hit in hits)
         {
@@ -152,7 +217,8 @@ public class PlayerCombat : MonoBehaviour
 
     public void SetAttackCooldown(float newAttackCooldown)
     {
-        attackCooldown = Mathf.Max(0.01f, newAttackCooldown);
+        attackCooldown =
+            Mathf.Max(0.01f, newAttackCooldown);
     }
 
     public void ResetAttackCooldown()
@@ -164,6 +230,7 @@ public class PlayerCombat : MonoBehaviour
     {
         StopAllCoroutines();
         attackInProgress = false;
+        StopBlocking();
     }
 
     private void OnDrawGizmosSelected()

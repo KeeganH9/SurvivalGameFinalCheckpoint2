@@ -7,14 +7,21 @@ public class PlayerEquipment : MonoBehaviour
     [Header("References")]
     public Inventory inventory;
     public Transform handPoint;
+    public Transform handPointL;
     public PlayerCombat playerCombat;
     public PlayerHealth playerHealth;
+    public CraftingRecipe[] craftingRecipes;
 
-    [Header("Equipped Item")]
+    [Header("Equipped Items")]
     [SerializeField] private ItemData equippedItem;
+    [SerializeField] private ItemData equippedShield;
 
     private GameObject equippedObject;
+    private GameObject equippedShieldObject;
+
     private int equippedSlotIndex = -1;
+    private int equippedShieldSlotIndex = -1;
+
     private Animator animator;
 
     public event Action<int> EquippedSlotChanged;
@@ -51,14 +58,6 @@ public class PlayerEquipment : MonoBehaviour
             return;
         }
 
-        if (handPoint == null)
-        {
-            Debug.LogWarning(
-                "PlayerEquipment does not have a Hand Point assigned."
-            );
-            return;
-        }
-
         if (inventory.slots == null ||
             slotIndex < 0 ||
             slotIndex >= inventory.slots.Length)
@@ -66,18 +65,10 @@ public class PlayerEquipment : MonoBehaviour
             return;
         }
 
-        if (slotIndex == equippedSlotIndex)
-        {
-            Unequip();
-            Debug.Log("Unequipped current item.");
-            return;
-        }
-
         InventorySlotData slot = inventory.slots[slotIndex];
 
         if (slot == null || slot.item == null)
         {
-            Unequip();
             return;
         }
 
@@ -98,7 +89,34 @@ public class PlayerEquipment : MonoBehaviour
             return;
         }
 
-        Unequip();
+        if (item.itemType == ItemType.Shield)
+        {
+            EquipShield(item, slotIndex);
+        }
+        else
+        {
+            EquipRightHandItem(item, slotIndex);
+        }
+    }
+
+    private void EquipRightHandItem(ItemData item, int slotIndex)
+    {
+        if (slotIndex == equippedSlotIndex)
+        {
+            UnequipRightHand();
+            Debug.Log("Unequipped right-hand item.");
+            return;
+        }
+
+        if (handPoint == null)
+        {
+            Debug.LogWarning(
+                "PlayerEquipment does not have the right hand point assigned."
+            );
+            return;
+        }
+
+        UnequipRightHand();
 
         equippedObject = Instantiate(
             item.equippedPrefab,
@@ -120,9 +138,44 @@ public class PlayerEquipment : MonoBehaviour
             ConnectItemToCombat(item);
         }
 
-        EquippedSlotChanged?.Invoke(equippedSlotIndex);
+        EquippedSlotChanged?.Invoke(slotIndex);
 
-        Debug.Log("Equipped: " + item.itemName);
+        Debug.Log("Equipped right-hand item: " + item.itemName);
+    }
+
+    private void EquipShield(ItemData item, int slotIndex)
+    {
+        if (slotIndex == equippedShieldSlotIndex)
+        {
+            UnequipShield();
+            Debug.Log("Unequipped shield.");
+            return;
+        }
+
+        if (handPointL == null)
+        {
+            Debug.LogWarning(
+                "PlayerEquipment does not have the left hand point assigned."
+            );
+            return;
+        }
+
+        UnequipShield();
+
+        equippedShieldObject = Instantiate(
+            item.equippedPrefab,
+            handPointL
+        );
+
+        equippedShieldObject.transform.localPosition = Vector3.zero;
+        equippedShieldObject.transform.localRotation = Quaternion.identity;
+
+        equippedShield = item;
+        equippedShieldSlotIndex = slotIndex;
+
+        EquippedSlotChanged?.Invoke(slotIndex);
+
+        Debug.Log("Equipped shield: " + item.itemName);
     }
 
     private void PrepareConsumable()
@@ -143,6 +196,14 @@ public class PlayerEquipment : MonoBehaviour
             return;
         }
 
+        if (equippedObject == null)
+        {
+            Debug.LogWarning(
+                "PlayerEquipment has no equipped object to connect to combat."
+            );
+            return;
+        }
+
         playerCombat.enabled = true;
 
         Transform weaponAttackPoint =
@@ -159,16 +220,93 @@ public class PlayerEquipment : MonoBehaviour
             );
         }
 
+        int upgradedDamage = item.damage;
+        float upgradedRange = item.attackRange;
+        int upgradeLevel = 0;
+
+        if (inventory != null &&
+            inventory.slots != null &&
+            equippedSlotIndex >= 0 &&
+            equippedSlotIndex < inventory.slots.Length)
+        {
+            InventorySlotData equippedSlot =
+                inventory.slots[equippedSlotIndex];
+
+            if (equippedSlot != null &&
+                equippedSlot.item == item)
+            {
+                upgradeLevel = equippedSlot.upgradeLevel;
+            }
+        }
+
+        CraftingRecipe upgradeRecipe = FindRecipeForItem(item);
+
+        if (upgradeRecipe != null && upgradeLevel > 0)
+        {
+            upgradedDamage +=
+                upgradeRecipe.damageIncreasePerLevel *
+                upgradeLevel;
+
+            upgradedRange +=
+                upgradeRecipe.rangeIncreasePerLevel *
+                upgradeLevel;
+        }
+        else if (upgradeLevel > 0)
+        {
+            Debug.LogWarning(
+                "No crafting recipe was found for " +
+                item.itemName +
+                ". Its upgraded combat stats could not be calculated."
+            );
+        }
+
         playerCombat.EquipWeapon(
             weaponAttackPoint,
-            item.damage,
-            item.attackRange
+            upgradedDamage,
+            upgradedRange
         );
 
         playerCombat.SetAttackCooldown(item.attackCooldown);
+
+        Debug.Log(
+            "Equipped " + item.itemName +
+            " at upgrade level " + upgradeLevel +
+            ". Damage: " + upgradedDamage +
+            ", Range: " + upgradedRange
+        );
     }
 
-    public void Unequip()
+    private CraftingRecipe FindRecipeForItem(ItemData item)
+    {
+        if (item == null || craftingRecipes == null)
+        {
+            return null;
+        }
+
+        foreach (CraftingRecipe recipe in craftingRecipes)
+        {
+            if (recipe != null && recipe.result == item)
+            {
+                return recipe;
+            }
+        }
+
+        return null;
+    }
+
+    public void RefreshEquippedWeaponStats()
+    {
+        if (equippedItem == null ||
+            equippedObject == null ||
+            equippedSlotIndex < 0)
+        {
+            return;
+        }
+
+        ConnectItemToCombat(equippedItem);
+    }
+
+    public void UnequipRightHand()
     {
         if (equippedObject != null)
         {
@@ -189,6 +327,26 @@ public class PlayerEquipment : MonoBehaviour
         EquippedSlotChanged?.Invoke(-1);
     }
 
+    public void UnequipShield()
+    {
+        if (equippedShieldObject != null)
+        {
+            Destroy(equippedShieldObject);
+        }
+
+        equippedShieldObject = null;
+        equippedShield = null;
+        equippedShieldSlotIndex = -1;
+
+        EquippedSlotChanged?.Invoke(-1);
+    }
+
+    public void Unequip()
+    {
+        UnequipRightHand();
+        UnequipShield();
+    }
+
     public ItemData GetEquippedItem()
     {
         return equippedItem;
@@ -204,6 +362,27 @@ public class PlayerEquipment : MonoBehaviour
         return equippedSlotIndex;
     }
 
+    public ItemData GetEquippedShield()
+    {
+        return equippedShield;
+    }
+
+    public GameObject GetEquippedShieldObject()
+    {
+        return equippedShieldObject;
+    }
+
+    public int GetEquippedShieldSlotIndex()
+    {
+        return equippedShieldSlotIndex;
+    }
+
+    public bool HasShieldEquipped()
+    {
+        return equippedShield != null &&
+               equippedShieldObject != null;
+    }
+
     public Animator GetAnimator()
     {
         return animator;
@@ -211,81 +390,51 @@ public class PlayerEquipment : MonoBehaviour
 
     public void OnSlot1(InputValue value)
     {
-        if (value.isPressed)
-        {
-            EquipSlot(0);
-        }
+        if (value.isPressed) EquipSlot(0);
     }
 
     public void OnSlot2(InputValue value)
     {
-        if (value.isPressed)
-        {
-            EquipSlot(1);
-        }
+        if (value.isPressed) EquipSlot(1);
     }
 
     public void OnSlot3(InputValue value)
     {
-        if (value.isPressed)
-        {
-            EquipSlot(2);
-        }
+        if (value.isPressed) EquipSlot(2);
     }
 
     public void OnSlot4(InputValue value)
     {
-        if (value.isPressed)
-        {
-            EquipSlot(3);
-        }
+        if (value.isPressed) EquipSlot(3);
     }
 
     public void OnSlot5(InputValue value)
     {
-        if (value.isPressed)
-        {
-            EquipSlot(4);
-        }
+        if (value.isPressed) EquipSlot(4);
     }
 
     public void OnSlot6(InputValue value)
     {
-        if (value.isPressed)
-        {
-            EquipSlot(5);
-        }
+        if (value.isPressed) EquipSlot(5);
     }
 
     public void OnSlot7(InputValue value)
     {
-        if (value.isPressed)
-        {
-            EquipSlot(6);
-        }
+        if (value.isPressed) EquipSlot(6);
     }
 
     public void OnSlot8(InputValue value)
     {
-        if (value.isPressed)
-        {
-            EquipSlot(7);
-        }
+        if (value.isPressed) EquipSlot(7);
     }
 
     public void OnSlot9(InputValue value)
     {
-        if (value.isPressed)
-        {
-            EquipSlot(8);
-        }
+        if (value.isPressed) EquipSlot(8);
     }
 
     public void OnSlot10(InputValue value)
     {
-        if (value.isPressed)
-        {
-            EquipSlot(9);
-        }
+        if (value.isPressed) EquipSlot(9);
     }
 }

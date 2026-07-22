@@ -7,7 +7,7 @@ public class CompassMarkerBar : MonoBehaviour
     public RectTransform markerContainer;
     public TMP_Text markerPrefab;
 
-    private float panelWidth = 350f;
+    private float panelWidth = 240f;
     private float pixelsPerDegree = 4f;
 
     private readonly string[] labels = { "N", "NE", "E", "SE", "S", "SW", "W", "NW" };

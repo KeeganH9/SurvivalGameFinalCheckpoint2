@@ -19,6 +19,19 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 38b60c48643c4ec4e85baa9eaa9057ac, type: 2}
     amount: 15
   - item: {fileID: 11400000, guid: 21876822f4b31454e89f41afc81030f5, type: 2}
-    amount: 9
+    amount: 15
+  - item: {fileID: 11400000, guid: a2d4ad7d0f8a47348b55ffa7b4334311, type: 2}
+    amount: 2
+  - item: {fileID: 11400000, guid: ed0c7802c59328f46b00837a9dfc2542, type: 2}
+    amount: 2
   result: {fileID: 11400000, guid: e00271e05dccd7246b912b89b9dc4028, type: 2}
   resultAmount: 1
+  upgradeIngredients:
+  - item: {fileID: 11400000, guid: 21876822f4b31454e89f41afc81030f5, type: 2}
+    amount: 21
+  - item: {fileID: 11400000, guid: 38b60c48643c4ec4e85baa9eaa9057ac, type: 2}
+    amount: 20
+  - item: {fileID: 11400000, guid: ed0c7802c59328f46b00837a9dfc2542, type: 2}
+    amount: 5
+  damageIncreasePerLevel: 10
+  rangeIncreasePerLevel: 0.25

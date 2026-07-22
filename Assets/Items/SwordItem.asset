@@ -18,11 +18,12 @@ MonoBehaviour:
   maxStackSize: 1
   canEquip: 1
   equippedPrefab: {fileID: 4547452623613324927, guid: 405ac381d5cd292409a84f13b7739d25, type: 3}
-  damage: 50
+  toolType: 0
+  damage: 25
   attackCooldown: 0.8
   attackRange: 2.5
   healAmount: 0
   useDelay: 1
   useAnimationTrigger: Drink
   canUpgrade: 1
-  maximumUpgradeLevel: 3
+  maximumUpgradeLevel: 5

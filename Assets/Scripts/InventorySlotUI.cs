@@ -3,7 +3,9 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class InventorySlotUI : MonoBehaviour, IPointerClickHandler
+public class InventorySlotUI :
+    MonoBehaviour,
+    IPointerClickHandler
 {
     [Header("UI References")]
     public Image itemIcon;
@@ -13,11 +15,14 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler
     private PlayerEquipment playerEquipment;
     private int slotIndex = -1;
 
-    public void Setup(PlayerEquipment equipment, int index)
+    public void Setup(
+        PlayerEquipment equipment,
+        int index)
     {
         if (playerEquipment != null)
         {
-            playerEquipment.EquippedSlotChanged -= UpdateEquippedHighlight;
+            playerEquipment.EquippedSlotChanged -=
+                UpdateEquippedHighlight;
         }
 
         playerEquipment = equipment;
@@ -25,16 +30,53 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler
 
         if (playerEquipment != null)
         {
-            playerEquipment.EquippedSlotChanged += UpdateEquippedHighlight;
+            playerEquipment.EquippedSlotChanged +=
+                UpdateEquippedHighlight;
 
             UpdateEquippedHighlight(
                 playerEquipment.GetEquippedSlotIndex()
             );
         }
+        else
+        {
+            UpdateEquippedHighlight(-1);
+        }
     }
 
     public void SetSlot(ItemData item, int amount)
     {
+        if (item == null)
+        {
+            Debug.LogError(
+                "InventorySlotUI on '" +
+                gameObject.name +
+                "' received a null ItemData."
+            );
+
+            ClearSlot();
+            return;
+        }
+
+        if (itemIcon == null)
+        {
+            Debug.LogError(
+                "Item Icon is missing on inventory slot: " +
+                gameObject.name
+            );
+
+            return;
+        }
+
+        if (stackText == null)
+        {
+            Debug.LogError(
+                "Stack Text is missing on inventory slot: " +
+                gameObject.name
+            );
+
+            return;
+        }
+
         itemIcon.sprite = item.icon;
         itemIcon.gameObject.SetActive(true);
 
@@ -44,35 +86,63 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler
 
     public void ClearSlot()
     {
-        itemIcon.sprite = null;
-        itemIcon.gameObject.SetActive(false);
+        if (itemIcon != null)
+        {
+            itemIcon.sprite = null;
+            itemIcon.gameObject.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError(
+                "Item Icon is missing on inventory slot: " +
+                gameObject.name
+            );
+        }
 
-        stackText.text = "";
-        stackText.gameObject.SetActive(false);
+        if (stackText != null)
+        {
+            stackText.text = "";
+            stackText.gameObject.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError(
+                "Stack Text is missing on inventory slot: " +
+                gameObject.name
+            );
+        }
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public void OnPointerClick(
+        PointerEventData eventData)
     {
         if (playerEquipment == null)
         {
             Debug.LogWarning(
-                "InventorySlotUI does not have PlayerEquipment assigned."
+                "InventorySlotUI on '" +
+                gameObject.name +
+                "' does not have PlayerEquipment assigned."
             );
+
             return;
         }
 
         if (slotIndex < 0)
         {
             Debug.LogWarning(
-                "InventorySlotUI does not have a valid slot index."
+                "InventorySlotUI on '" +
+                gameObject.name +
+                "' does not have a valid slot index."
             );
+
             return;
         }
 
         playerEquipment.EquipSlot(slotIndex);
     }
 
-    private void UpdateEquippedHighlight(int equippedSlotIndex)
+    private void UpdateEquippedHighlight(
+        int equippedSlotIndex)
     {
         if (equippedHighlight == null)
         {
@@ -88,7 +158,8 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler
     {
         if (playerEquipment != null)
         {
-            playerEquipment.EquippedSlotChanged -= UpdateEquippedHighlight;
+            playerEquipment.EquippedSlotChanged -=
+                UpdateEquippedHighlight;
         }
     }
 }

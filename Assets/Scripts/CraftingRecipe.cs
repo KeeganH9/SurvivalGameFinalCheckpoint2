@@ -7,7 +7,10 @@ public class RecipeIngredient
     public int amount;
 }
 
-[CreateAssetMenu(fileName = "New Recipe", menuName = "Crafting/Recipe")]
+[CreateAssetMenu(
+    fileName = "New Recipe",
+    menuName = "Crafting/Recipe"
+)]
 public class CraftingRecipe : ScriptableObject
 {
     [Header("Recipe Info")]
@@ -18,11 +21,17 @@ public class CraftingRecipe : ScriptableObject
 
     public Sprite recipeIcon;
 
-    [Header("Ingredients")]
+    [Header("Crafting Ingredients")]
     public RecipeIngredient[] ingredients;
 
     [Header("Crafted Item")]
     public ItemData result;
-
     public int resultAmount = 1;
+
+    [Header("Upgrade Ingredients")]
+    public RecipeIngredient[] upgradeIngredients;
+
+    [Header("Stats Gained Per Upgrade")]
+    public int damageIncreasePerLevel = 5;
+    public float rangeIncreasePerLevel = 0.25f;
 }

@@ -3620,7 +3620,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 4dbcaff738734f748b36a4067a71ae2b, type: 3}
   m_Controller: {fileID: 9100000, guid: 031fd71364207ac4f9e6203bfad62173, type: 2}
-  m_CullingMode: 1
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
@@ -3670,12 +3670,12 @@ MonoBehaviour:
   - triggerName: Attack1
     damage: 5
     attackRange: 2
-    damageDelay: 0.5
+    damageDelay: 1.25
     cooldown: 2
   - triggerName: Attack2
     damage: 10
     attackRange: 1
-    damageDelay: 0.3
+    damageDelay: 0.8
     cooldown: 5
   turnSpeed: 8
   speedParameter: Speed
@@ -3715,8 +3715,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZombieHealth
   maxHealth: 50
+  healthIncrease: 50
+  daysPerIncrease: 10
+  dayNightManager: {fileID: 0}
   deathTrigger: Die
   destroyDelay: 5
+  attackOneTrigger: Attack1
+  attackTwoTrigger: Attack2
 --- !u!82 &-3270458166927186689
 AudioSource:
   m_ObjectHideFlags: 0

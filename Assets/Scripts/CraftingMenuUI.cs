@@ -21,6 +21,10 @@ public class CraftingMenuUI : MonoBehaviour
     public Transform ingredientList;
     public IngredientRowUI ingredientRowPrefab;
 
+    [Header("Shared Craft Button")]
+    public Button craftButton;
+    public TextMeshProUGUI craftButtonText;
+
     private CraftingRecipe selectedRecipe;
 
     private void Start()
@@ -29,17 +33,26 @@ public class CraftingMenuUI : MonoBehaviour
         ClearSelectedRecipeUI();
     }
 
+    private void OnEnable()
+    {
+        RefreshSelectedRecipeUI();
+    }
+
     private void GenerateRecipeButtons()
     {
         if (recipeList == null)
         {
-            Debug.LogWarning("CraftingMenuUI has no Recipe List assigned.");
+            Debug.LogWarning(
+                "CraftingMenuUI has no Recipe List assigned."
+            );
             return;
         }
 
         if (recipeButtonPrefab == null)
         {
-            Debug.LogWarning("CraftingMenuUI has no Recipe Button Prefab assigned.");
+            Debug.LogWarning(
+                "CraftingMenuUI has no Recipe Button Prefab assigned."
+            );
             return;
         }
 
@@ -82,6 +95,18 @@ public class CraftingMenuUI : MonoBehaviour
         Debug.Log("Selected recipe: " + selectedRecipe.recipeName);
     }
 
+    private void RefreshSelectedRecipeUI()
+    {
+        if (selectedRecipe != null)
+        {
+            UpdateSelectedRecipeUI();
+        }
+        else
+        {
+            UpdateCraftButton();
+        }
+    }
+
     private void UpdateSelectedRecipeUI()
     {
         if (selectedRecipe == null)
@@ -109,19 +134,43 @@ public class CraftingMenuUI : MonoBehaviour
         }
 
         GenerateIngredientRows();
+        UpdateCraftButton();
+    }
+
+    private bool ShouldUpgradeSelectedRecipe()
+    {
+        if (selectedRecipe == null ||
+            selectedRecipe.result == null ||
+            !selectedRecipe.result.canUpgrade ||
+            craftingManager == null ||
+            craftingManager.inventory == null)
+        {
+            return false;
+        }
+
+        InventorySlotData itemSlot =
+            craftingManager.inventory.FindSlotWithItem(
+                selectedRecipe.result
+            );
+
+        return itemSlot != null;
     }
 
     private void GenerateIngredientRows()
     {
         if (ingredientList == null)
         {
-            Debug.LogWarning("CraftingMenuUI has no Ingredient List assigned.");
+            Debug.LogWarning(
+                "CraftingMenuUI has no Ingredient List assigned."
+            );
             return;
         }
 
         if (ingredientRowPrefab == null)
         {
-            Debug.LogWarning("CraftingMenuUI has no Ingredient Row Prefab assigned.");
+            Debug.LogWarning(
+                "CraftingMenuUI has no Ingredient Row Prefab assigned."
+            );
             return;
         }
 
@@ -130,8 +179,23 @@ public class CraftingMenuUI : MonoBehaviour
             Destroy(ingredientList.GetChild(i).gameObject);
         }
 
-        if (selectedRecipe == null ||
-            selectedRecipe.ingredients == null)
+        if (selectedRecipe == null)
+        {
+            return;
+        }
+
+        RecipeIngredient[] displayedIngredients;
+
+        if (ShouldUpgradeSelectedRecipe())
+        {
+            displayedIngredients = selectedRecipe.upgradeIngredients;
+        }
+        else
+        {
+            displayedIngredients = selectedRecipe.ingredients;
+        }
+
+        if (displayedIngredients == null)
         {
             return;
         }
@@ -143,7 +207,7 @@ public class CraftingMenuUI : MonoBehaviour
             inventory = craftingManager.inventory;
         }
 
-        foreach (RecipeIngredient ingredient in selectedRecipe.ingredients)
+        foreach (RecipeIngredient ingredient in displayedIngredients)
         {
             if (ingredient == null || ingredient.item == null)
             {
@@ -157,6 +221,47 @@ public class CraftingMenuUI : MonoBehaviour
 
             newRow.Setup(ingredient, inventory);
         }
+    }
+
+    private void UpdateCraftButton()
+    {
+        if (craftButton == null || craftButtonText == null)
+        {
+            return;
+        }
+
+        if (selectedRecipe == null ||
+            selectedRecipe.result == null)
+        {
+            craftButtonText.text = "Select a Recipe";
+            craftButton.interactable = false;
+            return;
+        }
+
+        if (!ShouldUpgradeSelectedRecipe())
+        {
+            craftButtonText.text = "Craft";
+            craftButton.interactable = true;
+            return;
+        }
+
+        InventorySlotData itemSlot =
+            craftingManager.inventory.FindSlotWithItem(
+                selectedRecipe.result
+            );
+
+        if (itemSlot.upgradeLevel >=
+            selectedRecipe.result.maximumUpgradeLevel)
+        {
+            craftButtonText.text = "Max Level";
+            craftButton.interactable = false;
+            return;
+        }
+
+        craftButtonText.text =
+            "Upgrade to Level " + (itemSlot.upgradeLevel + 2);
+
+        craftButton.interactable = true;
     }
 
     private void ClearSelectedRecipeUI()
@@ -186,6 +291,8 @@ public class CraftingMenuUI : MonoBehaviour
                 Destroy(ingredientList.GetChild(i).gameObject);
             }
         }
+
+        UpdateCraftButton();
     }
 
     public void CraftSelectedRecipe()
@@ -204,10 +311,18 @@ public class CraftingMenuUI : MonoBehaviour
             return;
         }
 
-        bool craftedSuccessfully =
-            craftingManager.Craft(selectedRecipe);
+        bool succeeded;
 
-        if (craftedSuccessfully)
+        if (ShouldUpgradeSelectedRecipe())
+        {
+            succeeded = craftingManager.Upgrade(selectedRecipe);
+        }
+        else
+        {
+            succeeded = craftingManager.Craft(selectedRecipe);
+        }
+
+        if (succeeded)
         {
             UpdateSelectedRecipeUI();
         }

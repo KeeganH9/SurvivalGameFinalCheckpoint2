@@ -42,6 +42,7 @@ public class Inventory : MonoBehaviour
             return;
         }
 
+        // Try adding the item to an existing stack.
         for (int i = 0; i < slots.Length; i++)
         {
             if (slots[i] == null)
@@ -49,10 +50,14 @@ public class Inventory : MonoBehaviour
                 continue;
             }
 
-            if (slots[i].item == item && slots[i].amount < item.maxStackSize)
+            if (slots[i].item == item &&
+                slots[i].amount < item.maxStackSize)
             {
-                int spaceLeft = item.maxStackSize - slots[i].amount;
-                int amountToAdd = Mathf.Min(spaceLeft, amount);
+                int spaceLeft =
+                    item.maxStackSize - slots[i].amount;
+
+                int amountToAdd =
+                    Mathf.Min(spaceLeft, amount);
 
                 slots[i].amount += amountToAdd;
                 amount -= amountToAdd;
@@ -65,6 +70,7 @@ public class Inventory : MonoBehaviour
             }
         }
 
+        // Put any remaining items into empty slots.
         for (int i = 0; i < slots.Length; i++)
         {
             if (slots[i] != null)
@@ -72,9 +78,12 @@ public class Inventory : MonoBehaviour
                 continue;
             }
 
-            int amountToAdd = Mathf.Min(item.maxStackSize, amount);
+            int amountToAdd =
+                Mathf.Min(item.maxStackSize, amount);
 
-            slots[i] = new InventorySlotData(item, amountToAdd);
+            slots[i] =
+                new InventorySlotData(item, amountToAdd);
+
             amount -= amountToAdd;
 
             if (amount <= 0)
@@ -85,6 +94,14 @@ public class Inventory : MonoBehaviour
         }
 
         UpdateUI();
+
+        if (amount > 0)
+        {
+            Debug.LogWarning(
+                "Inventory is full. Could not add " +
+                amount + " " + item.itemName + "."
+            );
+        }
     }
 
     public int GetItemAmount(ItemData item)
@@ -98,7 +115,8 @@ public class Inventory : MonoBehaviour
 
         for (int i = 0; i < slots.Length; i++)
         {
-            if (slots[i] != null && slots[i].item == item)
+            if (slots[i] != null &&
+                slots[i].item == item)
             {
                 totalAmount += slots[i].amount;
             }
@@ -133,7 +151,8 @@ public class Inventory : MonoBehaviour
 
         for (int i = 0; i < slots.Length; i++)
         {
-            if (slots[i] == null || slots[i].item != item)
+            if (slots[i] == null ||
+                slots[i].item != item)
             {
                 continue;
             }
@@ -160,6 +179,30 @@ public class Inventory : MonoBehaviour
 
         UpdateUI();
         return true;
+    }
+
+    public InventorySlotData FindSlotWithItem(ItemData item)
+    {
+        if (item == null)
+        {
+            return null;
+        }
+
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i] != null &&
+                slots[i].item == item)
+            {
+                return slots[i];
+            }
+        }
+
+        return null;
+    }
+
+    public void RefreshUI()
+    {
+        UpdateUI();
     }
 
     private void UpdateUI()

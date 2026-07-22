@@ -14,6 +14,8 @@ public class PlayerInteraction : MonoBehaviour
     public PlayerEquipment playerEquipment;
 
     private InteractableResource currentResource;
+    private ReadableBook currentBook;
+
     private Animator animator;
     private bool isInteracting;
 
@@ -34,10 +36,21 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
-        FindNearbyResource();
+        // Do not search for other interactions while reading.
+        if (BookUI.Instance != null && BookUI.Instance.IsOpen)
+        {
+            if (promptText != null)
+            {
+                promptText.gameObject.SetActive(false);
+            }
+
+            return;
+        }
+
+        FindNearbyInteractable();
     }
 
-    private void FindNearbyResource()
+    private void FindNearbyInteractable()
     {
         Collider[] hits = Physics.OverlapSphere(
             transform.position,
@@ -45,38 +58,73 @@ public class PlayerInteraction : MonoBehaviour
         );
 
         InteractableResource closestResource = null;
+        ReadableBook closestBook = null;
         float closestDistance = Mathf.Infinity;
 
         foreach (Collider hit in hits)
         {
             InteractableResource resource =
-                hit.GetComponent<InteractableResource>();
+                hit.GetComponentInParent<InteractableResource>();
 
-            if (resource == null)
+            ReadableBook book =
+                hit.GetComponentInParent<ReadableBook>();
+
+            if (resource != null)
             {
-                continue;
+                float resourceDistance = Vector3.Distance(
+                    transform.position,
+                    resource.transform.position
+                );
+
+                if (resourceDistance < closestDistance)
+                {
+                    closestDistance = resourceDistance;
+                    closestResource = resource;
+                    closestBook = null;
+                }
             }
 
-            float distance = Vector3.Distance(
-                transform.position,
-                resource.transform.position
-            );
-
-            if (distance < closestDistance)
+            if (book != null)
             {
-                closestDistance = distance;
-                closestResource = resource;
+                float bookDistance = Vector3.Distance(
+                    transform.position,
+                    book.transform.position
+                );
+
+                if (bookDistance < closestDistance)
+                {
+                    closestDistance = bookDistance;
+                    closestBook = book;
+                    closestResource = null;
+                }
             }
         }
 
         currentResource = closestResource;
+        currentBook = closestBook;
 
+        UpdatePrompt();
+    }
+
+    private void UpdatePrompt()
+    {
         if (promptText == null)
         {
             return;
         }
 
-        if (currentResource != null && !isInteracting)
+        if (isInteracting)
+        {
+            promptText.gameObject.SetActive(false);
+            return;
+        }
+
+        if (currentBook != null)
+        {
+            promptText.text = currentBook.promptText;
+            promptText.gameObject.SetActive(true);
+        }
+        else if (currentResource != null)
         {
             promptText.text = currentResource.promptText;
             promptText.gameObject.SetActive(true);
@@ -89,19 +137,41 @@ public class PlayerInteraction : MonoBehaviour
 
     public void OnInteract(InputValue value)
     {
-        Debug.Log("OnInteract called");
-
         if (!value.isPressed)
         {
             return;
         }
 
-        if (currentResource == null || isInteracting)
+        // Pressing E while the book is open closes it.
+        if (BookUI.Instance != null && BookUI.Instance.IsOpen)
+        {
+            BookUI.Instance.CloseBook();
+            return;
+        }
+
+        if (isInteracting)
         {
             return;
         }
 
-        StartCoroutine(InteractWithResource());
+        // Open the nearby book.
+        if (currentBook != null)
+        {
+            currentBook.Interact();
+
+            if (promptText != null)
+            {
+                promptText.gameObject.SetActive(false);
+            }
+
+            return;
+        }
+
+        // Otherwise, interact with the nearby resource.
+        if (currentResource != null)
+        {
+            StartCoroutine(InteractWithResource());
+        }
     }
 
     private IEnumerator InteractWithResource()
@@ -113,17 +183,20 @@ public class PlayerInteraction : MonoBehaviour
             promptText.gameObject.SetActive(false);
         }
 
+        InteractableResource resourceBeingUsed = currentResource;
+
         if (animator != null &&
-            !string.IsNullOrEmpty(currentResource.animationTrigger))
+            resourceBeingUsed != null &&
+            !string.IsNullOrEmpty(resourceBeingUsed.animationTrigger))
         {
-            animator.SetTrigger(currentResource.animationTrigger);
+            animator.SetTrigger(resourceBeingUsed.animationTrigger);
         }
 
         yield return new WaitForSeconds(0.8f);
 
-        if (currentResource != null)
+        if (resourceBeingUsed != null)
         {
-            currentResource.Interact(inventory, playerEquipment);
+            resourceBeingUsed.Interact(inventory, playerEquipment);
         }
 
         yield return new WaitForSeconds(0.3f);

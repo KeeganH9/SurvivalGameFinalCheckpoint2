@@ -19,7 +19,7 @@ MonoBehaviour:
   canEquip: 1
   equippedPrefab: {fileID: 4645378111194881232, guid: 8e54b9beb1de052439cca5434582668d, type: 3}
   toolType: 1
-  damage: 45
+  damage: 10
   attackCooldown: 0.8
   attackRange: 1.5
   healAmount: 0

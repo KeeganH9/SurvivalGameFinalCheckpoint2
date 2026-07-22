@@ -6,6 +6,9 @@ public class PlayerHealth : MonoBehaviour
     [Header("Health")]
     public int maximumHealth = 100;
 
+    [Header("References")]
+    public PlayerCombat playerCombat;
+
     [Header("UI")]
     public PlayerHealthUI healthUI;
 
@@ -14,6 +17,14 @@ public class PlayerHealth : MonoBehaviour
 
     private int currentHealth;
     private bool isDead;
+
+    private void Awake()
+    {
+        if (playerCombat == null)
+        {
+            playerCombat = GetComponent<PlayerCombat>();
+        }
+    }
 
     private void Start()
     {
@@ -29,7 +40,14 @@ public class PlayerHealth : MonoBehaviour
             return;
         }
 
+        if (playerCombat != null && playerCombat.IsBlocking)
+        {
+            Debug.Log("Damage blocked by shield.");
+            return;
+        }
+
         currentHealth -= damage;
+
         currentHealth = Mathf.Clamp(
             currentHealth,
             0,
@@ -62,6 +80,7 @@ public class PlayerHealth : MonoBehaviour
         int previousHealth = currentHealth;
 
         currentHealth += amount;
+
         currentHealth = Mathf.Clamp(
             currentHealth,
             0,
