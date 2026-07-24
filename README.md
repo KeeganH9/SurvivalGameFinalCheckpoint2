@@ -49,6 +49,7 @@ CONTROLS:
 -Left Click to swing and attack, while in inventory to equip items, and to select recipes and craft intems in crafting ui
 -F is to consume(Only consumable is the health potion right now)
 -Right click to block if sheild is in right hand
+-Esc to enter pause menu
 
 ---
 
@@ -58,7 +59,8 @@ UI:
 -Added the ability to click on equipable objects in inventory and now player can equip things with a click
 -These items are also highlighted in the invtory UI
 -Added a health Bar that deplets as player takes damage and can be replenished when health potion is drank, made it a fixed point so it doesnt move when resizing the screen
--Added Compas(New UI will added to the compas soon)
+-Added updated comapss made it smaller and changed styling
+-Added Pause window to go back to main menu or quit game
 
 ---
 
@@ -67,6 +69,7 @@ CRAFTING RECIPES:
 -Sword is craftable and equipable and useable with attack animation
 -Pick Aex is craftable and equipable and when used on ore has its own animation
 -Health Potion Is craftable and equipable and now the drink animation is working correctly
+-Shield is craftable and equipable and can be used to block
 
 ---
 
@@ -76,6 +79,7 @@ RESOURCES/TERRAIN/TEXTURES:
 -Added Ores
 -Added Stones
 -Added apples harvestable from apple tree
+-Added sticks as a new item havestable from the log on ground prefab
 -Added new terrain texture
 -Added new grass detail textures
 -Added new character model to fit the games vibes better
