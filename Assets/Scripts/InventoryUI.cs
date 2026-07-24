@@ -1,13 +1,16 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class InventoryUI : MonoBehaviour
 {
+    [Header("Menu Panels")]
     public GameObject inventoryPanel;
+
+    [Header("Other Menus")]
+    public CraftingMenuUI craftingMenu;
 
     public static bool IsAnyMenuOpen { get; set; }
 
-    private bool isOpen;
+    public bool IsOpen { get; private set; }
 
     private void Start()
     {
@@ -16,41 +19,81 @@ public class InventoryUI : MonoBehaviour
             inventoryPanel.SetActive(false);
         }
 
-        isOpen = false;
-        IsAnyMenuOpen = false;
-
+        IsOpen = false;
+        UpdateMenuState();
         LockCursor();
     }
 
-    public void OnInventory(InputValue value)
+
+    public void ToggleInventory()
     {
-        if (!value.isPressed)
+        if (IsOpen)
         {
-            return;
-        }
-
-        ToggleInventory();
-    }
-
-    private void ToggleInventory()
-    {
-        isOpen = !isOpen;
-
-        if (inventoryPanel != null)
-        {
-            inventoryPanel.SetActive(isOpen);
-        }
-
-        IsAnyMenuOpen = isOpen;
-
-        if (isOpen)
-        {
-            UnlockCursor();
+            CloseInventory();
         }
         else
         {
+            OpenInventory();
+        }
+    }
+
+   public void OpenInventory()
+{
+    if (craftingMenu == null)
+    {
+        craftingMenu = GetComponent<CraftingMenuUI>();
+    }
+
+    if (craftingMenu != null)
+    {
+        craftingMenu.CloseCraftingMenu();
+
+        // Forces the crafting panel closed if its state became unsynchronized.
+        if (craftingMenu.craftingPanel != null)
+        {
+            craftingMenu.craftingPanel.SetActive(false);
+        }
+    }
+
+    IsOpen = true;
+
+    if (inventoryPanel != null)
+    {
+        inventoryPanel.SetActive(true);
+    }
+
+    UpdateMenuState();
+    UnlockCursor();
+}
+
+    public void CloseInventory()
+    {
+        IsOpen = false;
+
+        if (inventoryPanel != null)
+        {
+            inventoryPanel.SetActive(false);
+        }
+
+        UpdateMenuState();
+
+        if (!IsAnyMenuOpen && !PauseMenuUI.IsPaused)
+        {
             LockCursor();
         }
+    }
+
+    public void CloseForPauseMenu()
+    {
+        CloseInventory();
+    }
+
+    private void UpdateMenuState()
+    {
+        bool craftingOpen =
+            craftingMenu != null && craftingMenu.IsOpen;
+
+        IsAnyMenuOpen = IsOpen || craftingOpen;
     }
 
     private void UnlockCursor()

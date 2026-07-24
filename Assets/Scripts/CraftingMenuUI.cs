@@ -4,6 +4,10 @@ using UnityEngine.UI;
 
 public class CraftingMenuUI : MonoBehaviour
 {
+    [Header("Crafting Menu")]
+    public GameObject craftingPanel;
+    public InventoryUI inventoryMenu;
+
     [Header("Recipes")]
     public CraftingRecipe[] recipes;
 
@@ -25,17 +29,99 @@ public class CraftingMenuUI : MonoBehaviour
     public Button craftButton;
     public TextMeshProUGUI craftButtonText;
 
+    public bool IsOpen { get; private set; }
+
     private CraftingRecipe selectedRecipe;
 
     private void Start()
     {
         GenerateRecipeButtons();
         ClearSelectedRecipeUI();
+
+        IsOpen = false;
+
+        if (craftingPanel != null)
+        {
+            craftingPanel.SetActive(false);
+        }
+
+        UpdateMenuState();
     }
 
-    private void OnEnable()
+
+    public void ToggleCraftingMenu()
     {
-        RefreshSelectedRecipeUI();
+        if (IsOpen)
+        {
+            CloseCraftingMenu();
+        }
+        else
+        {
+            OpenCraftingMenu();
+        }
+    }
+
+   public void OpenCraftingMenu()
+{
+    if (inventoryMenu == null)
+    {
+        inventoryMenu = GetComponent<InventoryUI>();
+    }
+
+    if (inventoryMenu != null)
+    {
+        inventoryMenu.CloseInventory();
+
+        // Forces the inventory panel closed even if its state became unsynchronized.
+        if (inventoryMenu.inventoryPanel != null)
+        {
+            inventoryMenu.inventoryPanel.SetActive(false);
+        }
+    }
+
+    IsOpen = true;
+
+    if (craftingPanel != null)
+    {
+        craftingPanel.SetActive(true);
+    }
+
+    RefreshSelectedRecipeUI();
+    UpdateMenuState();
+
+    Cursor.lockState = CursorLockMode.None;
+    Cursor.visible = true;
+}
+
+    public void CloseCraftingMenu()
+    {
+        IsOpen = false;
+
+        if (craftingPanel != null)
+        {
+            craftingPanel.SetActive(false);
+        }
+
+        UpdateMenuState();
+
+        if (!InventoryUI.IsAnyMenuOpen && !PauseMenuUI.IsPaused)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+    }
+
+    public void CloseForPauseMenu()
+    {
+        CloseCraftingMenu();
+    }
+
+    private void UpdateMenuState()
+    {
+        bool inventoryOpen =
+            inventoryMenu != null && inventoryMenu.IsOpen;
+
+        InventoryUI.IsAnyMenuOpen = IsOpen || inventoryOpen;
     }
 
     private void GenerateRecipeButtons()

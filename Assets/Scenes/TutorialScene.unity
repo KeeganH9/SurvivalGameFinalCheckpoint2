@@ -708,7 +708,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -150}
+  m_AnchoredPosition: {x: 0, y: -180}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1283068629
@@ -839,7 +839,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 136, y: 170}
+  m_AnchoredPosition: {x: 100, y: 152}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1431768747
@@ -863,7 +863,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "WASD - move \nShift - sprint\ni - inventory \nC - inventory\nE - Interact\nLeft
-    Mouse - Attack"
+    Mouse - Attack\nRight Mouse - Block(With shield)\nEScape - Pause Menu"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 61f5559be29cf884b98f0b06604e9bc9, type: 2}
   m_sharedMaterial: {fileID: -398121375696440569, guid: 61f5559be29cf884b98f0b06604e9bc9, type: 2}
@@ -929,7 +929,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -314.80585, y: 0, z: 0, w: -273.09515}
+  m_margin: {x: -314.80585, y: 0, z: -64.27338, w: -273.09515}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
